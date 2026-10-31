@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nam Khánh - Nền tảng Chia sẻ Video Pastel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        matcha: {
+                            50: '#F4F7F4',
+                            100: '#E8EFE9',
+                            200: '#D1DFC3',
+                            300: '#B8CFAB',
+                            400: '#94B49F',
+                            500: '#799F85',
+                            600: '#5F836B',
+                            700: '#496752',
+                            800: '#344B3C',
+                            900: '#203026',
+                        },
+                        cream: {
+                            50: '#FCFCF9',
+                            100: '#F7F9F6',
+                            200: '#EFEFE8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F7F9F6;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E8EFE9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94B49F;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #799F85;
+        }
+        .video-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .video-card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(148, 180, 159, 0.3);
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-matcha-900 bg-cream-100 flex flex-col h-screen overflow-hidden">
+
+    <!-- HEADER / NAVIGATION BAR -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-matcha-100 px-4 lg:px-6 py-3 flex items-center justify-between shrink-0 z-30">
+        <!-- Left: Logo & Menu Toggle -->
+        <div class="flex items-center gap-4">
+            <button id="toggleSidebar" class="p-2 rounded-xl text-matcha-800 hover:bg-matcha-100 transition md:hidden">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+            <a href="#" onclick="filterCategory('Tất cả')" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-2xl bg-matcha-400 flex items-center justify-center text-white shadow-md shadow-matcha-200 group-hover:scale-105 transition">
+                    <i class="fa-solid fa-leaf text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-matcha-800">Nam<span class="text-matcha-500 font-normal">Khánh</span></span>
+            </a>
+        </div>
+
+        <!-- Center: Search Bar -->
+        <div class="flex-1 max-w-xl mx-4 hidden sm:block">
+            <div class="relative flex items-center">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm trong hệ sinh thái nam khánh" 
+                    class="w-full bg-matcha-50 border border-matcha-200 rounded-full py-2.5 pl-5 pr-12 text-sm text-matcha-800 placeholder-matcha-400 focus:outline-none focus:border-matcha-400 focus:ring-2 focus:ring-matcha-200 transition">
+                <button id="searchBtn" class="absolute right-1 w-9 h-9 rounded-full bg-matcha-400 text-white flex items-center justify-center hover:bg-matcha-500 transition shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Action Controls -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <button onclick="openUploadModal()" class="bg-matcha-400 hover:bg-matcha-500 text-white px-4 py-2 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md shadow-matcha-200 transition active:scale-95">
+                <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+                <span class="hidden sm:inline">Đăng Video</span>
+            </button>
+            <div class="w-9 h-9 rounded-full bg-matcha-200 border-2 border-matcha-300 flex items-center justify-center overflow-hidden cursor-pointer hover:ring-2 hover:ring-matcha-400 transition">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE SEARCH BAR -->
+    <div class="sm:hidden px-4 py-2 bg-white border-b border-matcha-100">
+        <div class="relative flex items-center">
+            <input type="text" id="mobileSearchInput" placeholder="Tìm kiếm trong hệ sinh thái nam khánh" 
+                class="w-full bg-matcha-50 border border-matcha-200 rounded-full py-2 pl-4 pr-10 text-xs text-matcha-800 placeholder-matcha-400 focus:outline-none focus:border-matcha-400">
+            <button id="mobileSearchBtn" class="absolute right-1 w-7 h-7 rounded-full bg-matcha-400 text-white flex items-center justify-center">
+                <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER WRAPPER -->
+    <div class="relative flex-1 overflow-hidden">
+        
+        <!-- HOME VIEW (MAIN BODY CONTAINER) -->
+        <div id="homeView" class="flex w-full h-full overflow-hidden transition-all duration-300">
+
+            <!-- SIDEBAR NAVIGATION -->
+            <aside id="sidebar" class="w-64 bg-white border-r border-matcha-100 flex flex-col justify-between shrink-0 transition-all duration-300 -translate-x-full md:translate-x-0 fixed md:relative z-20 h-full">
+                <div class="p-4 space-y-6 overflow-y-auto">
+                    <!-- Main Nav -->
+                    <div class="space-y-1">
+                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-matcha-400 mb-2">Khám phá</p>
+                        <a href="#" onclick="filterCategory('Tất cả')" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl bg-matcha-100 text-matcha-800 font-semibold text-sm transition">
+                            <i class="fa-solid fa-compass text-matcha-500"></i>
+                            <span>Trang chủ</span>
+                        </a>
+                        <a href="#" onclick="filterCategory('Matcha Vibe')" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-matcha-700 hover:bg-matcha-50 font-medium text-sm transition">
+                            <i class="fa-solid fa-mug-hot text-matcha-400"></i>
+                            <span>Matcha Vibe</span>
+                        </a>
+                        <a href="#" onclick="filterCategory('Relaxing')" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-matcha-700 hover:bg-matcha-50 font-medium text-sm transition">
+                            <i class="fa-solid fa-spa text-matcha-400"></i>
+                            <span>Thư giãn (Lo-Fi)</span>
+                        </a>
+                        <a href="#" onclick="filterCategory('Vlog')" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-matcha-700 hover:bg-matcha-50 font-medium text-sm transition">
+                            <i class="fa-solid fa-video text-matcha-400"></i>
+                            <span>Vlog Cuộc sống</span>
+                        </a>
+                    </div>
+
+                    <!-- Personal Nav -->
+                    <div class="space-y-1">
+                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-matcha-400 mb-2">Cá nhân</p>
+                        <a href="#" onclick="filterMyVideos()" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-matcha-700 hover:bg-matcha-50 font-medium text-sm transition">
+                            <i class="fa-solid fa-layer-group text-matcha-400"></i>
+                            <span>Video đã đăng</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-matcha-700 hover:bg-matcha-50 font-medium text-sm transition">
+                            <i class="fa-regular fa-heart text-matcha-400"></i>
+                            <span>Đã thích</span>
+                        </a>
+                    </div>
+
+                    <!-- Matcha Quote Card -->
+                    <div class="bg-gradient-to-br from-matcha-100 to-matcha-200/50 p-4 rounded-2xl border border-matcha-200/60">
+                        <div class="flex items-center gap-2 text-matcha-700 font-bold text-xs mb-1">
+                            <i class="fa-solid fa-seedling text-matcha-500"></i>
+                            <span>Góc Thư Giãn</span>
+                        </div>
+                        <p class="text-xs text-matcha-800 leading-relaxed">
+                            Thưởng thức một tách trà xanh Matcha và tận hưởng những khoảnh khắc dịu êm nhất.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer info -->
+                <div class="p-4 border-t border-matcha-100 text-xs text-matcha-400 text-center">
+                    <p>© 2026 Nam Khánh</p>
+                    <p class="mt-1">Thư thái & Sáng tạo</p>
+                </div>
+            </aside>
+
+            <!-- CONTENT AREA -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-cream-100">
+                
+                <!-- Category Chips Filter Scrollable Bar -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 scrollbar-none" id="categoryChips">
+                    <!-- Dynamic Chips insertion -->
+                </div>
+
+                <!-- Main Content Header -->
+                <div class="flex items-center justify-between mb-5">
+                    <div>
+                        <h1 id="sectionTitle" class="text-xl sm:text-2xl font-bold text-matcha-900 tracking-tight">Video Dành Cho Bạn</h1>
+                        <p id="sectionSub" class="text-xs sm:text-sm text-matcha-500 mt-0.5">Khám phá các video mới nhất từ cộng đồng Nam Khánh</p>
+                    </div>
+                    <div class="bg-white border border-matcha-200 rounded-full px-3 py-1 text-xs text-matcha-600 font-medium shadow-xs" id="videoCountBadge">
+                        0 video
+                    </div>
+                </div>
+
+                <!-- VIDEO GRID CONTAINER -->
+                <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <!-- Dynamic Video Cards Insertion -->
+                </div>
+
+                <!-- EMPTY STATE CONTAINER (HIDDEN BY DEFAULT) -->
+                <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+                    <div class="w-20 h-20 rounded-full bg-matcha-100 flex items-center justify-center text-matcha-400 mb-4 text-3xl">
+                        <i class="fa-solid fa-film"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-matcha-800">Chưa tìm thấy video nào</h3>
+                    <p class="text-xs text-matcha-500 mt-1 max-w-sm">Hãy thử tìm kiếm từ khóa khác hoặc trở thành người đầu tiên đăng video trong danh mục này!</p>
+                    <button onclick="openUploadModal()" class="mt-5 bg-matcha-400 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-matcha-500 transition shadow-md shadow-matcha-200 active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-xs"></i> Đăng Video Ngay
+                    </button>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- FULL PAGE VIDEO PLAYER VIEW (NEW BACKGROUND VIEW) -->
+        <div id="playerView" class="hidden absolute inset-0 bg-cream-100 overflow-y-auto z-40 flex flex-col transition-all duration-300">
+            <!-- Top Navigation / Back Button Bar -->
+            <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-matcha-200/80 px-3 py-2 flex items-center justify-between z-10 shadow-xs">
+                <button id="backToHomeBtn" onclick="closePlayerView()" class="bg-matcha-100 hover:bg-matcha-200 text-matcha-800 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition active:scale-95 border border-matcha-200">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Trang chủ</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span id="playerCategoryTag" class="bg-matcha-200 text-matcha-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Category</span>
+                </div>
+            </div>
+
+            <!-- Main Viewing Area -->
+            <div class="max-w-4xl w-full mx-auto p-2.5 sm:p-4 space-y-3">
+                <!-- 16:9 Video Canvas Frame (Hỗ trợ cả HTML5 Video & YouTube iFrame) -->
+                <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-lg border border-matcha-200 relative group" id="playerContainer">
+                    <video id="mainVideoPlayer" controls controlsList="nodownload" class="w-full h-full object-contain bg-matcha-900 hidden"></video>
+                    <iframe id="mainYoutubePlayer" class="w-full h-full hidden border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <!-- Video Details & Actions Container -->
+                <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-matcha-200/80 shadow-xs space-y-3">
+                    
+                    <!-- Header Row: Title & Action Buttons -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-matcha-100">
+                        <div>
+                            <h2 id="playerFullTitle" class="text-sm sm:text-lg font-bold text-matcha-900 leading-tight">Video Title</h2>
+                            <p id="playerStats" class="text-[11px] text-matcha-500 font-medium mt-0.5">0 lượt xem • Vừa xong</p>
+                        </div>
+                        
+                        <!-- Interactive Action Buttons -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="likeBtn" class="flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-cream-50 border border-matcha-200 text-matcha-700 hover:bg-matcha-100 text-xs font-bold transition shadow-xs">
+                                <i class="fa-regular fa-thumbs-up text-matcha-500 text-xs" id="likeIcon"></i>
+                                <span id="likeCount">0</span> Thích
+                            </button>
+                            <button id="shareBtn" class="flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-cream-50 border border-matcha-200 text-matcha-700 hover:bg-matcha-100 text-xs font-bold transition shadow-xs">
+                                <i class="fa-solid fa-share text-matcha-500 text-xs"></i>
+                                Chia sẻ
+                            </button>
+                            <button id="deleteActiveVideoBtn" onclick="deleteCurrentVideo()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-xs font-bold transition shadow-xs">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                                Xóa
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Channel Info & Subscribe -->
+                    <div class="flex items-center justify-between bg-cream-50 p-2.5 rounded-xl border border-matcha-100 shadow-xs">
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <img id="playerChannelAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-8 h-8 rounded-full object-cover border border-matcha-300 shrink-0">
+                            <div class="truncate">
+                                <h4 id="playerChannelName" class="font-bold text-xs sm:text-sm text-matcha-900 truncate">Tên Kênh</h4>
+                                <p class="text-[10px] text-matcha-500">Matcha Creator</p>
+                            </div>
+                        </div>
+                        <button id="subBtn" onclick="toggleSubscribe()" class="bg-matcha-400 hover:bg-matcha-500 text-white px-3.5 py-1 rounded-full text-xs font-semibold shadow-xs transition shrink-0 active:scale-95">
+                            Đăng ký
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-cream-50 p-3 rounded-xl border border-matcha-100 shadow-xs">
+                        <p class="text-[10px] uppercase font-bold text-matcha-400 tracking-wider mb-1">Mô tả video</p>
+                        <p id="playerDescription" class="text-xs text-matcha-800 leading-normal whitespace-pre-line">
+                            Mô tả video sẽ xuất hiện ở đây...
+                        </p>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="bg-cream-50 p-3 rounded-xl border border-matcha-100 shadow-xs space-y-2.5">
+                        <h4 class="font-bold text-xs text-matcha-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-regular fa-comments text-matcha-500 text-xs"></i>
+                            <span>Bình luận</span>
+                        </h4>
+
+                        <!-- Add Comment Input -->
+                        <div class="flex gap-2">
+                            <input type="text" id="commentInput" placeholder="Viết phản hồi..." class="flex-1 bg-white border border-matcha-200 rounded-lg px-3 py-1.5 text-xs text-matcha-800 placeholder-matcha-400 focus:outline-none focus:border-matcha-400">
+                            <button id="postCommentBtn" class="bg-matcha-400 hover:bg-matcha-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95">Gửi</button>
+                        </div>
+
+                        <!-- Comment List -->
+                        <div id="commentsList" class="space-y-2 pt-1 max-h-36 overflow-y-auto pr-1">
+                            <p class="text-xs text-matcha-400 italic text-center py-1" id="noCommentsMsg">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: UPLOAD VIDEO MODAL -->
+    <div id="uploadModal" class="fixed inset-0 bg-matcha-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-4 shadow-xl border border-matcha-100 transform scale-95 transition-transform duration-300" id="uploadModalCard">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-2.5 border-b border-matcha-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-matcha-100 text-matcha-600 flex items-center justify-center">
+                        <i class="fa-solid fa-video text-xs"></i>
+                    </div>
+                    <h3 class="font-bold text-sm text-matcha-900">Đăng Video Mới</h3>
+                </div>
+                <button id="closeUploadBtn" class="text-matcha-400 hover:text-matcha-700 p-1 rounded-full hover:bg-matcha-50 transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="uploadForm" class="mt-3 space-y-2.5">
+                <!-- Video Source Type Selector -->
+                <div class="flex gap-1.5">
+                    <button type="button" onclick="switchUploadTab('url')" id="tabUrl" class="flex-1 py-1.5 px-2 text-[11px] font-semibold rounded-lg border border-matcha-400 bg-matcha-100 text-matcha-800 transition">
+                        <i class="fa-solid fa-link mr-1"></i> Đường dẫn URL
+                    </button>
+                    <button type="button" onclick="switchUploadTab('file')" id="tabFile" class="flex-1 py-1.5 px-2 text-[11px] font-semibold rounded-lg border border-matcha-200 bg-white text-matcha-600 transition">
+                        <i class="fa-solid fa-file-arrow-up mr-1"></i> Tải tệp lên
+                    </button>
+                </div>
+
+                <!-- URL Input Area -->
+                <div id="urlInputContainer" class="space-y-0.5">
+                    <label class="text-[11px] font-bold text-matcha-700">URL Video (MP4 / YouTube)</label>
+                    <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=... hoặc link MP4" 
+                        class="w-full bg-matcha-50 border border-matcha-200 rounded-lg py-1.5 px-2.5 text-xs text-matcha-800 focus:outline-none focus:border-matcha-400">
+                </div>
+
+                <!-- File Input Area (Hidden initially) -->
+                <div id="fileInputContainer" class="hidden space-y-0.5">
+                    <label class="text-[11px] font-bold text-matcha-700">Tệp Video Từ Máy Tính</label>
+                    <div class="border border-dashed border-matcha-200 bg-matcha-50/50 rounded-xl p-2.5 text-center cursor-pointer hover:border-matcha-400 transition">
+                        <input type="file" id="videoFile" accept="video/*" class="hidden">
+                        <label for="videoFile" class="cursor-pointer flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-base text-matcha-400"></i>
+                            <span class="text-xs font-semibold text-matcha-700">Chọn tệp video từ máy</span>
+                        </label>
+                    </div>
+                    <div id="fileNameDisplay" class="text-[10px] text-matcha-600 font-medium hidden"></div>
+                </div>
+
+                <!-- Metadata Inputs -->
+                <div class="space-y-0.5">
+                    <label class="text-[11px] font-bold text-matcha-700">Tiêu Đề Video *</label>
+                    <input type="text" id="videoTitleInput" required placeholder="Nhập tiêu đề video..." 
+                        class="w-full bg-matcha-50 border border-matcha-200 rounded-lg py-1.5 px-2.5 text-xs text-matcha-800 focus:outline-none focus:border-matcha-400">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-0.5">
+                        <label class="text-[11px] font-bold text-matcha-700">Danh Mục</label>
+                        <select id="videoCategorySelect" class="w-full bg-matcha-50 border border-matcha-200 rounded-lg py-1.5 px-2 text-xs text-matcha-800 focus:outline-none focus:border-matcha-400">
+                            <option value="Matcha Vibe">Matcha Vibe</option>
+                            <option value="Relaxing">Relaxing</option>
+                            <option value="Music">Music</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Vlog">Vlog</option>
+                        </select>
+                    </div>
+                    <div class="space-y-0.5">
+                        <label class="text-[11px] font-bold text-matcha-700">Tên Kênh</label>
+                        <input type="text" id="channelNameInput" placeholder="Tên kênh..." 
+                            class="w-full bg-matcha-50 border border-matcha-200 rounded-lg py-1.5 px-2.5 text-xs text-matcha-800 focus:outline-none focus:border-matcha-400">
+                    </div>
+                </div>
+
+                <!-- Thumbnail Input Area (File Upload Only) -->
+                <div class="space-y-0.5">
+                    <label class="text-[11px] font-bold text-matcha-700">Ảnh Bìa (Tùy chọn)</label>
+                    <div class="border border-dashed border-matcha-200 bg-matcha-50/50 rounded-xl p-2 text-center cursor-pointer hover:border-matcha-400 transition">
+                        <input type="file" id="thumbnailFile" accept="image/*" class="hidden">
+                        <label for="thumbnailFile" class="cursor-pointer flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-image text-sm text-matcha-400"></i>
+                            <span class="text-xs font-semibold text-matcha-700">Nhấp để chọn ảnh bìa</span>
+                        </label>
+                    </div>
+                    <div id="thumbFileNameDisplay" class="text-[10px] text-matcha-600 font-medium hidden"></div>
+                </div>
+
+                <div class="space-y-0.5">
+                    <label class="text-[11px] font-bold text-matcha-700">Mô Tả</label>
+                    <textarea id="videoDescInput" rows="2" placeholder="Nội dung mô tả ngắn..." 
+                        class="w-full bg-matcha-50 border border-matcha-200 rounded-lg py-1.5 px-2.5 text-xs text-matcha-800 focus:outline-none focus:border-matcha-400 resize-none"></textarea>
+                </div>
+
+                <!-- Submit buttons -->
+                <div class="pt-1.5 flex items-center justify-end gap-2">
+                    <button type="button" id="cancelUploadBtn" class="px-3 py-1.5 rounded-full text-xs font-semibold text-matcha-600 hover:bg-matcha-100 transition">Hủy</button>
+                    <button type="submit" class="bg-matcha-400 hover:bg-matcha-500 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm transition active:scale-95">Đăng Ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: VIDEO PLAYER MODAL -->
+    <div id="playerModal" class="fixed inset-0 bg-matcha-900/60 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 hidden opacity-0 transition-all duration-300">
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl max-w-5xl w-full shadow-2xl overflow-hidden border border-matcha-200/80 max-h-[92vh] flex flex-col transform scale-95 transition-transform duration-300" id="playerModalCard">
+            
+            <!-- Player Bar Header -->
+            <div class="px-5 py-3 bg-matcha-800/95 text-white flex items-center justify-between border-b border-matcha-700/50 shrink-0">
+                <div class="flex items-center gap-3 truncate pr-4">
+                    <span id="playerCategoryTag" class="bg-matcha-400/30 text-matcha-100 border border-matcha-300/30 text-[11px] px-3 py-0.5 rounded-full font-semibold">Category</span>
+                    <h3 id="playerTitle" class="font-bold text-sm sm:text-base text-matcha-50 truncate">Video Title</h3>
+                </div>
+                <button id="closePlayerBtn" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition shrink-0 active:scale-90">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Layout (Fixed Aspect Ratio 16:9 Screen) -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="space-y-4 p-4 sm:p-5">
+                    
+                    <!-- Fixed 16:9 Video Container with Rounded Glass Frame -->
+                    <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-lg border border-matcha-900/20 relative group">
+                        <video id="mainVideoPlayer" controls controlsList="nodownload" class="w-full h-full object-contain bg-matcha-900"></video>
+                    </div>
+
+                    <!-- Video Details & Actions Container -->
+                    <div class="bg-cream-50 p-4 sm:p-5 rounded-2xl border border-matcha-200/70 space-y-4">
+                        
+                        <!-- Header Row: Title & Action Buttons -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-matcha-200/60">
+                            <div>
+                                <h2 id="playerFullTitle" class="text-base sm:text-xl font-bold text-matcha-900 leading-snug">Video Title</h2>
+                                <p id="playerStats" class="text-xs text-matcha-500 font-medium mt-1">0 lượt xem • Vừa xong</p>
+                            </div>
+                            
+                            <!-- Interactive Action Buttons -->
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button id="likeBtn" class="flex items-center gap-2 py-2 px-4 rounded-xl bg-white border border-matcha-200 text-matcha-700 hover:bg-matcha-100 text-xs font-bold transition shadow-xs">
+                                    <i class="fa-regular fa-thumbs-up text-matcha-500 text-sm" id="likeIcon"></i>
+                                    <span id="likeCount">0</span> Thích
+                                </button>
+                                <button id="shareBtn" class="flex items-center gap-2 py-2 px-4 rounded-xl bg-white border border-matcha-200 text-matcha-700 hover:bg-matcha-100 text-xs font-bold transition shadow-xs">
+                                    <i class="fa-solid fa-share text-matcha-500 text-sm"></i>
+                                    Chia sẻ
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Channel Info & Subcribe -->
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-matcha-100 shadow-xs">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <img id="playerChannelAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-full object-cover border-2 border-matcha-300 shrink-0">
+                                <div class="truncate">
+                                    <h4 id="playerChannelName" class="font-bold text-sm text-matcha-800 truncate">Tên Kênh</h4>
+                                    <p class="text-[11px] text-matcha-400">Matcha Creator</p>
+                                </div>
+                            </div>
+                            <button id="subBtn" onclick="toggleSubscribe()" class="bg-matcha-400 hover:bg-matcha-500 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs transition shrink-0 active:scale-95">
+                                Đăng ký
+                            </button>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="bg-white p-3.5 rounded-xl border border-matcha-100 shadow-xs">
+                            <p class="text-[11px] uppercase font-bold text-matcha-400 tracking-wider mb-1">Mô tả video</p>
+                            <p id="playerDescription" class="text-xs text-matcha-700 leading-relaxed whitespace-pre-line">
+                                Mô tả video sẽ xuất hiện ở đây...
+                            </p>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="bg-white p-4 rounded-xl border border-matcha-100 shadow-xs space-y-3">
+                            <h4 class="font-bold text-xs text-matcha-800 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-regular fa-comments text-matcha-500"></i>
+                                <span>Bình luận</span>
+                            </h4>
+
+                            <!-- Add Comment Input -->
+                            <div class="flex gap-2">
+                                <input type="text" id="commentInput" placeholder="Viết phản hồi của bạn..." class="flex-1 bg-matcha-50/50 border border-matcha-200 rounded-xl px-3 py-2 text-xs text-matcha-800 placeholder-matcha-400 focus:outline-none focus:border-matcha-400">
+                                <button id="postCommentBtn" class="bg-matcha-400 hover:bg-matcha-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition active:scale-95">Gửi</button>
+                            </div>
+
+                            <!-- Comment List -->
+                            <div id="commentsList" class="space-y-2 pt-1 max-h-44 overflow-y-auto pr-1">
+                                <p class="text-xs text-matcha-400 italic text-center py-2" id="noCommentsMsg">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-matcha-800 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div class="w-7 h-7 rounded-full bg-matcha-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-check text-white"></i>
+        </div>
+        <span id="toastMsg" class="text-xs sm:text-sm font-medium">Thông báo ở đây</span>
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        const STORAGE_KEY = 'NAM_KHANH_VIDEOS_PERSIST';
+        const CATEGORIES = ['Tất cả', 'Matcha Vibe', 'Relaxing', 'Music', 'Gaming', 'Vlog'];
+
+        // Load persisted videos or initialize empty array
+        function loadSavedVideos() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveVideosToStorage(videosList) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(videosList));
+            } catch (e) {
+                console.error('Lỗi khi lưu localStorage:', e);
+            }
+        }
+
+        // App State
+        let videos = loadSavedVideos();
+        let currentCategory = 'Tất cả';
+        let currentSearchQuery = '';
+        let activeVideo = null;
+        let isLikedCurrent = false;
+        let isSubscribedCurrent = false;
+        let uploadTabMode = 'url';
+
+        // Helper: Convert Youtube link to embed URL & Extract ID
+        function parseYoutubeUrl(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                const videoId = match[2];
+                return {
+                    videoId: videoId,
+                    embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1`,
+                    thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+                };
+            }
+            return null;
+        }
+
+        // DOM Elements
+        const homeView = document.getElementById('homeView');
+        const playerView = document.getElementById('playerView');
+        const videoGrid = document.getElementById('videoGrid');
+        const emptyState = document.getElementById('emptyState');
+        const categoryChips = document.getElementById('categoryChips');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const sectionSub = document.getElementById('sectionSub');
+        const videoCountBadge = document.getElementById('videoCountBadge');
+
+        // Modal Elements
+        const uploadModal = document.getElementById('uploadModal');
+        const uploadModalCard = document.getElementById('uploadModalCard');
+        const openUploadBtn = document.getElementById('openUploadBtn');
+        const closeUploadBtn = document.getElementById('closeUploadBtn');
+        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+
+        const mainVideoPlayer = document.getElementById('mainVideoPlayer');
+        const mainYoutubePlayer = document.getElementById('mainYoutubePlayer');
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategoryChips();
+            renderVideos();
+
+            // Mobile Sidebar Toggle
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const sidebar = document.getElementById('sidebar');
+            if (toggleSidebar && sidebar) {
+                toggleSidebar.addEventListener('click', () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                });
+            }
+
+            // File Upload Listener
+            const videoFileInput = document.getElementById('videoFile');
+            if (videoFileInput) {
+                videoFileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const fileNameDisplay = document.getElementById('fileNameDisplay');
+                        if (fileNameDisplay) {
+                            fileNameDisplay.textContent = `Đã chọn video: ${file.name}`;
+                            fileNameDisplay.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
+
+            // Thumbnail File Listener
+            const thumbnailFileInput = document.getElementById('thumbnailFile');
+            if (thumbnailFileInput) {
+                thumbnailFileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const thumbFileNameDisplay = document.getElementById('thumbFileNameDisplay');
+                        if (thumbFileNameDisplay) {
+                            thumbFileNameDisplay.textContent = `Đã chọn ảnh bìa: ${file.name}`;
+                            thumbFileNameDisplay.classList.remove('hidden');
+                        }
+                    }
+                });
+            }
+
+            // Safe Event Listeners Setup
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => handleSearch(searchInput.value));
+                searchInput.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') handleSearch(searchInput.value);
+                });
+            }
+            if (mobileSearchBtn && mobileSearchInput) {
+                mobileSearchBtn.addEventListener('click', () => handleSearch(mobileSearchInput.value));
+            }
+
+            if (openUploadBtn) openUploadBtn.addEventListener('click', openUploadModal);
+            if (closeUploadBtn) closeUploadBtn.addEventListener('click', closeUploadModal);
+            if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeUploadModal);
+
+            const uploadForm = document.getElementById('uploadForm');
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const title = document.getElementById('videoTitleInput').value.trim();
+                    const category = document.getElementById('videoCategorySelect').value;
+                    const channel = document.getElementById('channelNameInput').value.trim() || 'Nam Khánh Creator';
+                    const description = document.getElementById('videoDescInput').value.trim();
+                    const thumbFileInput = document.getElementById('thumbnailFile');
+
+                    let videoSrc = '';
+                    let isYoutube = false;
+                    let ytEmbedUrl = '';
+                    let ytAutoThumb = '';
+
+                    if (uploadTabMode === 'url') {
+                        const rawUrl = document.getElementById('videoUrl').value.trim();
+                        if (!rawUrl) {
+                            showToast('Vui lòng nhập đường dẫn video!');
+                            return;
+                        }
+
+                        const ytData = parseYoutubeUrl(rawUrl);
+                        if (ytData) {
+                            isYoutube = true;
+                            ytEmbedUrl = ytData.embedUrl;
+                            ytAutoThumb = ytData.thumbnail;
+                            videoSrc = rawUrl;
+                        } else {
+                            videoSrc = rawUrl;
+                        }
+                    } else {
+                        const fileInput = document.getElementById('videoFile');
+                        if (fileInput && fileInput.files && fileInput.files[0]) {
+                            const file = fileInput.files[0];
+                            // Encode file as Data URL to store in localStorage safely (for smaller videos/demos)
+                            const reader = new FileReader();
+                            reader.onload = function(evt) {
+                                videoSrc = evt.target.result;
+                                processThumbnailAndSave(title, category, channel, description, videoSrc, isYoutube, ytEmbedUrl, ytAutoThumb, thumbFileInput);
+                            };
+                            reader.readAsDataURL(file);
+                            return;
+                        } else {
+                            showToast('Vui lòng chọn tệp video!');
+                            return;
+                        }
+                    }
+
+                    processThumbnailAndSave(title, category, channel, description, videoSrc, isYoutube, ytEmbedUrl, ytAutoThumb, thumbFileInput);
+                });
+            }
+
+            const likeBtn = document.getElementById('likeBtn');
+            if (likeBtn) {
+                likeBtn.addEventListener('click', () => {
+                    isLikedCurrent = !isLikedCurrent;
+                    if (activeVideo) {
+                        activeVideo.likes += isLikedCurrent ? 1 : -1;
+                        const likeCount = document.getElementById('likeCount');
+                        if (likeCount) likeCount.textContent = activeVideo.likes;
+                        saveVideosToStorage(videos);
+                    }
+                    updateLikeUI();
+                });
+            }
+
+            const postCommentBtn = document.getElementById('postCommentBtn');
+            if (postCommentBtn) {
+                postCommentBtn.addEventListener('click', () => {
+                    const commentInput = document.getElementById('commentInput');
+                    const text = commentInput ? commentInput.value.trim() : '';
+                    if (!text) return;
+
+                    const commentsList = document.getElementById('commentsList');
+                    const noCommentsMsg = document.getElementById('noCommentsMsg');
+                    if (noCommentsMsg) noCommentsMsg.remove();
+
+                    const newCommentHtml = `
+                        <div class="flex gap-2.5 text-xs bg-white p-3 rounded-xl border border-matcha-100 shadow-xs">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-7 h-7 rounded-full object-cover shrink-0">
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-matcha-800">Matcha Fan</span>
+                                    <span class="text-matcha-400 text-[10px]">Vừa xong</span>
+                                </div>
+                                <p class="text-matcha-700 mt-0.5">${text}</p>
+                            </div>
+                        </div>
+                    `;
+                    if (commentsList) {
+                        commentsList.insertAdjacentHTML('afterbegin', newCommentHtml);
+                    }
+                    if (commentInput) commentInput.value = '';
+                    showToast('Đã gửi bình luận thành công!');
+                });
+            }
+
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    document.execCommand('copy');
+                    showToast('Đã sao chép liên kết video!');
+                });
+            }
+        });
+
+        // Safe Thumbnail Processing & Video Saving
+        function processThumbnailAndSave(title, category, channel, description, videoSrc, isYoutube, ytEmbedUrl, ytAutoThumb, thumbFileInput) {
+            if (thumbFileInput && thumbFileInput.files && thumbFileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    saveAndRenderVideo(title, category, channel, description, videoSrc, evt.target.result, isYoutube, ytEmbedUrl);
+                };
+                reader.readAsDataURL(thumbFileInput.files[0]);
+            } else if (isYoutube && ytAutoThumb) {
+                saveAndRenderVideo(title, category, channel, description, videoSrc, ytAutoThumb, isYoutube, ytEmbedUrl);
+            } else {
+                generateThumbnailFromVideo(videoSrc, (extractedThumb) => {
+                    saveAndRenderVideo(title, category, channel, description, videoSrc, extractedThumb, isYoutube, ytEmbedUrl);
+                });
+            }
+        }
+
+        // Render Category Chips safely
+        function renderCategoryChips() {
+            const container = document.getElementById('categoryChips') || categoryChips;
+            if (!container) return;
+            
+            container.innerHTML = CATEGORIES.map(cat => `
+                <button onclick="filterCategory('${cat}')" 
+                    class="chip-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold transition border ${
+                        currentCategory === cat 
+                        ? 'bg-matcha-400 text-white border-matcha-400 shadow-sm' 
+                        : 'bg-white text-matcha-700 border-matcha-200 hover:bg-matcha-50'
+                    }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        // Render Video Cards Grid
+        function renderVideos() {
+            const grid = document.getElementById('videoGrid') || videoGrid;
+            const empty = document.getElementById('emptyState') || emptyState;
+            const countBadge = document.getElementById('videoCountBadge') || videoCountBadge;
+
+            let filtered = videos.filter(v => {
+                const matchesCat = currentCategory === 'Tất cả' || v.category === currentCategory;
+                const matchesSearch = v.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) || 
+                                      v.channel.toLowerCase().includes(currentSearchQuery.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            if (countBadge) countBadge.textContent = `${filtered.length} video`;
+
+            if (!grid) return;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                if (empty) {
+                    empty.classList.remove('hidden');
+                    empty.classList.add('flex');
+                }
+                return;
+            }
+
+            if (empty) {
+                empty.classList.add('hidden');
+                empty.classList.remove('flex');
+            }
+
+            grid.innerHTML = filtered.map(v => `
+                <div onclick="openPlayerView('${v.id}')" class="bg-white rounded-2xl overflow-hidden border border-matcha-100 shadow-sm video-card-hover cursor-pointer group flex flex-col justify-between relative">
+                    <div>
+                        <!-- Thumbnail Container -->
+                        <div class="relative aspect-video w-full overflow-hidden bg-matcha-100">
+                            <img src="${v.thumbnail}" alt="${v.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                                onerror="this.src='https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80'">
+                            <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-md font-mono">
+                                ${v.isYoutube ? 'YOUTUBE' : 'MP4'}
+                            </div>
+                            <!-- Nút Xóa nhanh góc trên thumbnail -->
+                            <button onclick="deleteVideo(event, '${v.id}')" title="Xóa video này" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200 shadow-md">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                            <div class="absolute inset-0 bg-matcha-900/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center pointer-events-none">
+                                <div class="w-11 h-11 rounded-full bg-white/90 text-matcha-600 flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition duration-300">
+                                    <i class="fa-solid fa-play text-sm ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Content -->
+                        <div class="p-3.5 flex gap-3">
+                            <img src="${v.avatar}" alt="${v.channel}" class="w-9 h-9 rounded-full object-cover border border-matcha-200 shrink-0">
+                            <div class="space-y-1 overflow-hidden">
+                                <h3 class="text-sm font-bold text-matcha-800 line-clamp-2 leading-snug group-hover:text-matcha-600 transition">${v.title}</h3>
+                                <p class="text-xs text-matcha-500 font-medium truncate">${v.channel}</p>
+                                <div class="flex items-center gap-1.5 text-[11px] text-matcha-400">
+                                    <span>${v.views}</span>
+                                    <span>•</span>
+                                    <span>${v.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Badge Bottom -->
+                    <div class="px-3.5 pb-3 pt-0 flex items-center justify-between">
+                        <span class="text-[10px] font-semibold bg-matcha-50 text-matcha-600 px-2.5 py-1 rounded-full border border-matcha-200">
+                            ${v.category}
+                        </span>
+                        ${v.isMyVideo ? '<span class="text-[10px] font-semibold bg-matcha-200 text-matcha-800 px-2 py-0.5 rounded">Video của bạn</span>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter Actions
+        function filterCategory(cat) {
+            closePlayerView();
+            currentCategory = cat;
+            sectionTitle.textContent = cat === 'Tất cả' ? 'Video Dành Cho Bạn' : `Danh mục: ${cat}`;
+            sectionSub.textContent = `Hiển thị danh sách các video thuộc chủ đề ${cat}`;
+            renderCategoryChips();
+            renderVideos();
+        }
+
+        function filterMyVideos() {
+            closePlayerView();
+            currentCategory = 'Tất cả';
+            currentSearchQuery = '';
+            sectionTitle.textContent = 'Video Của Tôi';
+            sectionSub.textContent = 'Quản lý các nội dung video bạn đã tải lên Nam Khánh';
+            
+            let filtered = videos.filter(v => v.isMyVideo);
+            videoCountBadge.textContent = `${filtered.length} video`;
+
+            if (filtered.length === 0) {
+                videoGrid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                videoGrid.innerHTML = filtered.map(v => `
+                    <div onclick="openPlayerView('${v.id}')" class="bg-white rounded-2xl overflow-hidden border border-matcha-100 shadow-sm video-card-hover cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="relative aspect-video w-full overflow-hidden bg-matcha-100">
+                                <img src="${v.thumbnail}" alt="${v.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-3.5 flex gap-3">
+                                <div class="space-y-1">
+                                    <h3 class="text-sm font-bold text-matcha-800 line-clamp-2">${v.title}</h3>
+                                    <p class="text-xs text-matcha-500">${v.views} • ${v.time}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            renderCategoryChips();
+        }
+
+        // Search Listeners
+        function handleSearch(query) {
+            closePlayerView();
+            currentSearchQuery = query;
+            renderVideos();
+        }
+
+        // Modal Upload Controls
+        function openUploadModal() {
+            if (!uploadModal || !uploadModalCard) return;
+            uploadModal.classList.remove('hidden');
+            setTimeout(() => {
+                uploadModal.classList.remove('opacity-0');
+                uploadModalCard.classList.remove('scale-95');
+                uploadModalCard.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeUploadModal() {
+            if (!uploadModal || !uploadModalCard) return;
+            uploadModal.classList.add('opacity-0');
+            uploadModalCard.classList.remove('scale-100');
+            uploadModalCard.classList.add('scale-95');
+            setTimeout(() => {
+                uploadModal.classList.add('hidden');
+                const uploadForm = document.getElementById('uploadForm');
+                if (uploadForm) uploadForm.reset();
+                const fileNameDisplay = document.getElementById('fileNameDisplay');
+                if (fileNameDisplay) fileNameDisplay.classList.add('hidden');
+                const thumbFileNameDisplay = document.getElementById('thumbFileNameDisplay');
+                if (thumbFileNameDisplay) thumbFileNameDisplay.classList.add('hidden');
+            }, 300);
+        }
+
+        // Switch Upload Mode Tab
+        function switchUploadTab(mode) {
+            uploadTabMode = mode;
+            const tabUrl = document.getElementById('tabUrl');
+            const tabFile = document.getElementById('tabFile');
+            const urlContainer = document.getElementById('urlInputContainer');
+            const fileContainer = document.getElementById('fileInputContainer');
+
+            if (mode === 'url') {
+                if (tabUrl) tabUrl.className = 'py-2 px-3 text-xs font-semibold rounded-xl border border-matcha-400 bg-matcha-100 text-matcha-800 transition';
+                if (tabFile) tabFile.className = 'py-2 px-3 text-xs font-semibold rounded-xl border border-matcha-200 bg-white text-matcha-600 transition';
+                if (urlContainer) urlContainer.classList.remove('hidden');
+                if (fileContainer) fileContainer.classList.add('hidden');
+            } else {
+                if (tabFile) tabFile.className = 'py-2 px-3 text-xs font-semibold rounded-xl border border-matcha-400 bg-matcha-100 text-matcha-800 transition';
+                if (tabUrl) tabUrl.className = 'py-2 px-3 text-xs font-semibold rounded-xl border border-matcha-200 bg-white text-matcha-600 transition';
+                if (fileContainer) fileContainer.classList.remove('hidden');
+                if (urlContainer) urlContainer.classList.add('hidden');
+            }
+        }
+
+        // Tự động trích xuất khung hình từ video HTML5 làm ảnh bìa
+        function generateThumbnailFromVideo(videoUrl, callback) {
+            const tempVideo = document.createElement('video');
+            tempVideo.src = videoUrl;
+            tempVideo.crossOrigin = 'anonymous';
+            tempVideo.currentTime = 1;
+
+            tempVideo.onloadeddata = function () {
+                const canvas = document.createElement('canvas');
+                canvas.width = tempVideo.videoWidth || 640;
+                canvas.height = tempVideo.videoHeight || 360;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                const dataURI = canvas.toDataURL('image/jpeg');
+                callback(dataURI);
+            };
+
+            tempVideo.onerror = function () {
+                callback('https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80');
+            };
+        }
+
+        // Lưu video và render lại giao diện & lưu vào localStorage
+        function saveAndRenderVideo(title, category, channel, description, videoSrc, thumbnailSrc, isYoutube = false, ytEmbedUrl = '') {
+            const newVideo = {
+                id: 'v_' + Date.now(),
+                title: title,
+                channel: channel,
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+                thumbnail: thumbnailSrc,
+                videoUrl: videoSrc,
+                isYoutube: isYoutube,
+                ytEmbedUrl: ytEmbedUrl,
+                views: '1 lượt xem',
+                time: 'Vừa xong',
+                category: category,
+                likes: 0,
+                description: description || 'Chưa có mô tả chi tiết.',
+                isMyVideo: true
+            };
+
+            videos.unshift(newVideo);
+            saveVideosToStorage(videos);
+            closeUploadModal();
+            renderVideos();
+            showToast('Đã lưu và đăng video thành công! 🍵');
+        }
+
+        // FULL PAGE PLAYER VIEW CONTROLS
+        function openPlayerView(videoId) {
+            activeVideo = videos.find(v => v.id === videoId);
+            if (!activeVideo) return;
+
+            const playerFullTitle = document.getElementById('playerFullTitle');
+            const playerCategoryTag = document.getElementById('playerCategoryTag');
+            const playerStats = document.getElementById('playerStats');
+            const playerChannelName = document.getElementById('playerChannelName');
+            const playerChannelAvatar = document.getElementById('playerChannelAvatar');
+            const playerDescription = document.getElementById('playerDescription');
+            const likeCount = document.getElementById('likeCount');
+
+            if (playerFullTitle) playerFullTitle.textContent = activeVideo.title;
+            if (playerCategoryTag) playerCategoryTag.textContent = activeVideo.category;
+            if (playerStats) playerStats.textContent = `${activeVideo.views} • ${activeVideo.time}`;
+            if (playerChannelName) playerChannelName.textContent = activeVideo.channel;
+            if (playerChannelAvatar) playerChannelAvatar.src = activeVideo.avatar;
+            if (playerDescription) playerDescription.textContent = activeVideo.description;
+            if (likeCount) likeCount.textContent = activeVideo.likes;
+
+            // Reset States
+            isLikedCurrent = false;
+            isSubscribedCurrent = false;
+            updateLikeUI();
+            updateSubUI();
+
+            // Set Video Source (Youtube Embed vs HTML5 Native Video)
+            if (activeVideo.isYoutube) {
+                if (mainVideoPlayer) {
+                    mainVideoPlayer.pause();
+                    mainVideoPlayer.classList.add('hidden');
+                }
+                if (mainYoutubePlayer) {
+                    mainYoutubePlayer.src = activeVideo.ytEmbedUrl;
+                    mainYoutubePlayer.classList.remove('hidden');
+                }
+            } else {
+                if (mainYoutubePlayer) {
+                    mainYoutubePlayer.src = '';
+                    mainYoutubePlayer.classList.add('hidden');
+                }
+                if (mainVideoPlayer) {
+                    mainVideoPlayer.src = activeVideo.videoUrl;
+                    mainVideoPlayer.classList.remove('hidden');
+                    mainVideoPlayer.play().catch(() => {});
+                }
+            }
+
+            // Reset comments display
+            const commentsList = document.getElementById('commentsList');
+            if (commentsList) {
+                commentsList.innerHTML = `<p class="text-xs sm:text-sm text-matcha-400 italic text-center py-2" id="noCommentsMsg">Chưa có bình luận nào. Hãy là người đầu tiên!</p>`;
+            }
+
+            // Switch Screen Views
+            if (homeView && playerView) {
+                homeView.classList.add('hidden');
+                playerView.classList.remove('hidden');
+                playerView.scrollTop = 0;
+            }
+        }
+
+        function closePlayerView() {
+            if (mainVideoPlayer) {
+                mainVideoPlayer.pause();
+                mainVideoPlayer.src = '';
+            }
+            if (mainYoutubePlayer) {
+                mainYoutubePlayer.src = '';
+            }
+            if (homeView && playerView) {
+                playerView.classList.add('hidden');
+                homeView.classList.remove('hidden');
+            }
+        }
+
+        function updateLikeUI() {
+            const likeBtn = document.getElementById('likeBtn');
+            const likeIcon = document.getElementById('likeIcon');
+            if (!likeBtn || !likeIcon) return;
+
+            if (isLikedCurrent) {
+                likeBtn.classList.add('bg-matcha-200', 'text-matcha-900', 'border-matcha-400');
+                likeIcon.className = 'fa-solid fa-thumbs-up text-matcha-600 text-base';
+            } else {
+                likeBtn.classList.remove('bg-matcha-200', 'text-matcha-900', 'border-matcha-400');
+                likeIcon.className = 'fa-regular fa-thumbs-up text-matcha-500 text-base';
+            }
+        }
+
+        function toggleSubscribe() {
+            isSubscribedCurrent = !isSubscribedCurrent;
+            updateSubUI();
+            showToast(isSubscribedCurrent ? 'Đã đăng ký kênh!' : 'Đã hủy đăng ký');
+        }
+
+        function updateSubUI() {
+            const subBtn = document.getElementById('subBtn');
+            if (!subBtn) return;
+            if (isSubscribedCurrent) {
+                subBtn.textContent = 'Đã đăng ký';
+                subBtn.className = 'bg-matcha-100 text-matcha-800 border border-matcha-300 px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition shrink-0';
+            } else {
+                subBtn.textContent = 'Đăng ký';
+                subBtn.className = 'bg-matcha-400 hover:bg-matcha-500 text-white px-5 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-xs transition shrink-0';
+            }
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            if (!toast || !toastMsg) return;
+            toastMsg.textContent = msg;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Xóa Video theo ID
+        function deleteVideo(e, videoId) {
+            if (e) e.stopPropagation();
+            videos = videos.filter(v => v.id !== videoId);
+            saveVideosToStorage(videos);
+            renderVideos();
+            showToast('Đã xóa video khỏi hệ thống!');
+        }
+
+        // Xóa Video đang xem
+        function deleteCurrentVideo() {
+            if (!activeVideo) return;
+            deleteVideo(null, activeVideo.id);
+            closePlayerView();
+        }
+    </script>
+</body>
+</html>
